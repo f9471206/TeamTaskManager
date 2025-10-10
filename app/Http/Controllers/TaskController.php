@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TaskResource;
+use App\Models\Project;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
@@ -23,6 +24,8 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'due_date' => 'nullable|date',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
         $this->taskService->create($validated);
@@ -85,6 +88,13 @@ class TaskController extends Controller
     {
 
         $res = $this->taskService->assignUsers($task);
+
+        return $this->success($res);
+    }
+
+    public function createTaskAssignUsers(Project $project)
+    {
+        $res = $this->taskService->createTaskAssignUsers($project);
 
         return $this->success($res);
     }

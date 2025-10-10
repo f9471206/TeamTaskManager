@@ -25,13 +25,13 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return $this->error('Invalid credentials', 401);
         }
 
         $user = Auth::user();
-        $token = $user->createToken('api_token', ['*'], now()->addHours(2))->plainTextToken;
+        $token = $user->createToken('api_token')->plainTextToken;
 
-        return response()->json([
+        return $this->success([
             'user' => $user,
             'token' => $token,
         ]);
@@ -48,11 +48,10 @@ class AuthController extends Controller
 
         $result = $this->authService->register($validated);
 
-        return response()->json([
-            'message' => 'User registered successfully',
+        return $this->success([
             'user' => $result['user'],
             'token' => $result['token'],
-        ], 201);
+        ]);
     }
 
     // 登出
@@ -60,12 +59,12 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out']);
+        return $this->success(data: ['message' => 'Logged out']);
     }
 
     // 取得當前使用者資訊
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return $this->success($request->user());
     }
 }

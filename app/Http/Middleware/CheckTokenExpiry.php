@@ -17,7 +17,6 @@ class CheckTokenExpiry
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
-
         if ($user && $request->bearerToken()) {
             $token = $user->currentAccessToken();
 

@@ -21,6 +21,7 @@ class ProjectService
         $authID = Auth::id();
         //只有團隊建立者才能新增專案
         $team = Team::findOrFail($data['team_id']);
+
         if ($team->owner->id !== $authID) {
             throw new ApiException('只有團隊建立者才能新增專案');
         }

@@ -48,7 +48,7 @@ class ProjectController extends Controller
 
     public function test()
     {
-        event(new TestCreate('test'));
+        event(new TestCreate());
 
         return $this->success();
     }

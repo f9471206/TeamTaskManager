@@ -28,12 +28,17 @@ class TaskService
             throw new ApiException('只有團隊建立者才能新增任務');
         }
 
-        Task::create([
+        $userIds = $data['user_ids'];
+
+        $task = Task::create([
             'project_id' => $data['project_id'],
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
             'due_date' => $data['due_date'] ?? null,
         ]);
+
+        $task->users()->sync($userIds);
+
         return true;
     }
 
@@ -164,7 +169,13 @@ class TaskService
 
             return $userArray;
         });
-
         return $result;
+    }
+
+    public function createTaskAssignUsers(Project $project)
+    {
+        $teamMembers = $project->team->members;
+
+        return $teamMembers;
     }
 }
