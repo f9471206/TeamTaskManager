@@ -1,25 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laravel Echo Test</title>
-</head>
+@section('title', '測試')
 
-<body>
-    <h1>Welcome</h1>
-    <div id="log"></div>
+@section('content')
+    <div class="max-w-6xl mx-auto">
+        <h1>test</h1>
+    </div>
+
     @vite('resources/js/app.js')
 
     <script type="module">
-        // 假設你在 Laravel 廣播事件裡的 Channel 是 public 的，例如：
-        window.Echo.channel('test')
-            .listen('.create', (e) => {
-                console.log('收到事件：', e);
-                document.getElementById('log').innerText = JSON.stringify(e);
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        const userId = user?.id;
+
+        window.Echo.private(`user.${userId}`)
+            .listen('.notify', (e) => {
+                console.log('接收到私人通知：', e);
             });
     </script>
-</body>
-
-</html>
+@endsection

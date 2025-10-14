@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\TeamNotify;
 use App\Exceptions\ApiException;
 use App\Mail\TeamInvitationMail;
 use App\Models\Invitation;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 class InvitationService
 {
 
-    public function sendInvite(Team $team, int $userId): Invitation
+    public function sendInvite(Team $team, int $userId)
     {
         $user = User::findOrFail($userId);
 
@@ -41,7 +42,10 @@ class InvitationService
         // 發送郵件
         Mail::to($user->email)->send(new TeamInvitationMail($team, $user, $invitation->token));
 
-        return $invitation;
+        // 發送通知
+        event(new TeamNotify($userId, $invitation->token));
+
+        return 'success';
     }
 
     /**

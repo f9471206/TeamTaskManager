@@ -37,3 +37,7 @@ Route::get('project/{id}', function ($id) {
 Route::get('task/create/{project_id}', function ($project_id) {
     return view('tasks.create', ['project_id' => $project_id]);
 });
+
+Route::get('/test', function () {
+    return view('test');
+});

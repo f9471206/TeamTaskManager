@@ -46,6 +46,7 @@
                 })
                 .then(data => {
                     sessionStorage.setItem('api_token', data.data.token);
+                    sessionStorage.setItem('user', JSON.stringify(data.data.user));
                     window.location.href = "/";
                 })
                 .catch(err => {

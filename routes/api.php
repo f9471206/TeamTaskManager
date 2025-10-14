@@ -24,13 +24,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{team}', [TeamController::class, 'update']); // 更新團隊資訊
         Route::delete('/{team}/{destroyMemberId}', [TeamController::class, 'destroyMember']); // 團隊成員刪除
         Route::delete('/{team}', [TeamController::class, 'destroy']); // 刪除團隊
-        Route::post('{team}/invite', [InvitationController::class, 'send']); // 發送邀請 新增團隊成員
-        Route::get('invitations/{token}/accept', [InvitationController::class, 'accept']); // 接受邀請
+        Route::post('/{team}/invite', [InvitationController::class, 'send']); // 發送邀請 新增團隊成員
+        Route::get('/invitations/{token}/accept', [InvitationController::class, 'accept']); // 接受邀請
     });
 
     // project
     Route::prefix('projects')->group(function () {
-        // Route::get('/test', [ProjectController::class, 'test']);
+        Route::get('/test', [ProjectController::class, 'test']);
         Route::get('/{project}', [ProjectController::class, 'show']);
         Route::post('/', [ProjectController::class, 'store']);
     });

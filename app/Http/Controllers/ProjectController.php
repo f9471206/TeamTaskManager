@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\TestCreate;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -48,7 +47,7 @@ class ProjectController extends Controller
 
     public function test()
     {
-        event(new TestCreate());
+        // event(new TeamNotify());
 
         return $this->success();
     }
