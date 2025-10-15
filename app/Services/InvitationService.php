@@ -6,6 +6,7 @@ use App\Events\TeamNotify;
 use App\Exceptions\ApiException;
 use App\Mail\TeamInvitationMail;
 use App\Models\Invitation;
+use App\Models\Notification;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,13 @@ use Illuminate\Support\Str;
 
 class InvitationService
 {
+    protected $authService;
+
+    public function __construct(
+        AuthService $authService
+    ) {
+        $this->authService = $authService;
+    }
 
     public function sendInvite(Team $team, int $userId)
     {
@@ -42,8 +50,19 @@ class InvitationService
         // 發送郵件
         Mail::to($user->email)->send(new TeamInvitationMail($team, $user, $invitation->token));
 
+        $message = "邀請你加入 {$team->name} 團隊";
+
+        Notification::create([
+            'user_id' => $userId,
+            'message' => $message,
+            'link' => "/api/invitations/{$invitation->token}/accept",
+            'type' => 'team_invite',
+        ]);
+
+        $notifications = $this->authService->getNotifications($userId);
+
         // 發送通知
-        event(new TeamNotify($userId, $invitation->token));
+        event(new TeamNotify(userId: $userId, message: $notifications));
 
         return 'success';
     }
@@ -84,4 +103,5 @@ class InvitationService
             return $invitation->team;
         });
     }
+
 }

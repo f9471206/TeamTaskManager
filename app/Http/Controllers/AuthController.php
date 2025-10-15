@@ -67,4 +67,24 @@ class AuthController extends Controller
     {
         return $this->success($request->user());
     }
+
+    public function notification(Request $request)
+    {
+
+        $userId = $request->user()->id;
+
+        $res = $this->authService->getNotifications($userId);
+
+        return $this->success($res);
+    }
+    public function notificationRead($id)
+    {
+        $notification = $this->authService->markAsRead($id);
+
+        if (!$notification) {
+            return $this->error('通知不存在');
+        }
+
+        return $this->success(['success' => true, 'message' => '已讀', 'data' => $notification]);
+    }
 }

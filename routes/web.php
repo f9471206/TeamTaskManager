@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', function () {
@@ -40,4 +41,9 @@ Route::get('task/create/{project_id}', function ($project_id) {
 
 Route::get('/test', function () {
     return view('test');
+});
+
+Route::post('/notification', function () {
+    $data = Request::all(); // 注意這裡是 facade 的方法
+    return view('notification', ['data' => $data]);
 });

@@ -19,10 +19,11 @@ class TeamNotify implements ShouldBroadcastNow
     /**
      * Create a new event instance.
      */
-    public function __construct($userId, $message)
+    public function __construct($userId, $message, )
     {
-        $this->message = $message;
         $this->userId = $userId;
+        $this->message = $message;
+
     }
 
     /**
@@ -43,8 +44,7 @@ class TeamNotify implements ShouldBroadcastNow
     {
         // /api/team/invitations/9b659908-9584-4cb1-a55c-af10331f9dac/accept
         return [
-            "api" => "/api/teams/invitations/{$this->message}/accept",
-            "token" => $this->message,
+            "message" => $this->message,
         ];
     }
 }

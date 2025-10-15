@@ -14,6 +14,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/notification', [AuthController::class, 'notification']);
+    Route::post('/notification/{id}/read', [AuthController::class, 'notificationRead']);
 
     // 團隊 Api 群組
     Route::prefix('teams')->group(function () {
