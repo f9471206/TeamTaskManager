@@ -22,15 +22,29 @@ class InvitationController extends Controller
     public function send(Request $request, Team $team)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required',
         ]);
 
-        $invitation = $this->invitationService->sendInvite($team, $request->user_id);
+        $userIds = $request->input('user_id');
 
-        return response()->json([
-            'message' => 'Invitation sent',
-            'invitation' => $invitation,
-        ]);
+        // ✅ 判斷是單筆還是多筆
+        if (is_array($userIds)) {
+            // 多筆邀請
+            $result = $this->invitationService->sendInviteArray($team, $userIds);
+
+            return response()->json([
+                'message' => 'Invitations sent',
+                'result' => $result,
+            ]);
+        } else {
+            // 單筆邀請
+            $invitation = $this->invitationService->sendInvite($team, (int) $userIds);
+
+            return response()->json([
+                'message' => 'Invitation sent',
+                'invitation' => $invitation,
+            ]);
+        }
     }
 
     // 接受邀請

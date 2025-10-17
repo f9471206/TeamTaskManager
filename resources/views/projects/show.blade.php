@@ -115,6 +115,10 @@
                                     <span class="text-gray-700 font-medium">${userNames}</span> 
                                     
                                     <span class="text-xs ${getStatusClasses(task.status.color)} px-2 py-1 rounded-full">${task.status.label}</span>
+                                    <a href="/task/update/${projectId}/${task.id}"
+                                        class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">
+                                        編輯
+                                    </a>
                                 </li> `;
                     }).join('') :
                     '<p class="text-gray-500 italic p-3">目前沒有子任務。</p>';
@@ -124,7 +128,7 @@
                 projectContainer.innerHTML = `
                     <div class="flex justify-between items-start mb-6 border-b pb-4">
                         <h1 class="text-4xl font-extrabold text-gray-900">${project.name}</h1>
-                        <a href="/projects/edit/${project.id}" 
+                        <a href="/project/update/${project.id}" 
                            class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition font-medium">
                             編輯專案
                         </a>

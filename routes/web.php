@@ -35,15 +35,27 @@ Route::get('project/{id}', function ($id) {
     return view('projects.show', ['id' => $id]);
 });
 
+Route::get('project/update/{project_id}', function ($project_id) {
+    return view('projects.update', ['project_id' => $project_id]);
+});
+
 Route::get('task/create/{project_id}', function ($project_id) {
     return view('tasks.create', ['project_id' => $project_id]);
+});
+
+Route::get('task/update/{project_id}/{task_id}', function ($project_id, $task_id) {
+    return view('tasks.update', ['project_id' => $project_id, 'task_id' => $task_id]);
 });
 
 Route::get('/test', function () {
     return view('test');
 });
 
+Route::get('/teamInvite/{id}', function ($id) {
+    return view('teams.invite', ['teamId' => $id]);
+});
+
 Route::post('/notification', function () {
-    $data = Request::all(); // 注意這裡是 facade 的方法
+    $data = Request::all();
     return view('notification', ['data' => $data]);
 });

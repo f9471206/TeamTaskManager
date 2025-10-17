@@ -8,11 +8,11 @@ use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/register', [AuthController::class, 'register']);
 
 // 需要認證的路由
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/register', [AuthController::class, 'register']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::get('/notification', [AuthController::class, 'notification']);
     Route::post('/notification/{id}/read', [AuthController::class, 'notificationRead']);
@@ -30,20 +30,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/invitations/{token}/accept', [InvitationController::class, 'accept']); // 接受邀請
     });
 
-    // project
     Route::prefix('projects')->group(function () {
         Route::get('/test', [ProjectController::class, 'test']);
         Route::get('/{project}', [ProjectController::class, 'show']);
+        Route::put('/{project}', [ProjectController::class, 'edit']);
         Route::post('/', [ProjectController::class, 'store']);
     });
 
-    // 修正後的 routes/api.php 檔案片段
-
     Route::prefix('tasks')->group(function () {
-        Route::get('/createTaskAssignUsersList/{project}', [TaskController::class, 'createTaskAssignUsers']); // 移到最前
-        Route::get('/assignUsersList/{task}', [TaskController::class, 'assignUsers']); // 移到前面
+        Route::get('/createTaskAssignUsersList/{project}', [TaskController::class, 'createTaskAssignUsers']);
+        Route::get('/assignUsersList/{task}', [TaskController::class, 'assignUsers']);
         route::post('/', [TaskController::class, 'store']);
-        route::get('/{task}', [TaskController::class, 'show']); // /tasks/123
+        route::get('/{task}', [TaskController::class, 'show']);
         Route::put('/{task}', [TaskController::class, 'update']);
         Route::delete('/{task}', [TaskController::class, 'destroyTask']);
         Route::post('/{task}/assign', [TaskController::class, 'assign']);

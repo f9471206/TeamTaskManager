@@ -60,6 +60,8 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'due_date' => 'nullable|date',
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
         ]);
 
         $this->taskService->updateTask($task, $validated);

@@ -51,4 +51,23 @@ class ProjectService
 
         return $project;
     }
+
+    public function updateProject(Project $project, $data)
+    {
+        $authID = Auth::id();
+        //只有團隊建立者才能新增專案
+        $team = Team::findOrFail($data['team_id']);
+
+        if ($team->owner->id !== $authID) {
+            throw new ApiException('只有團隊建立者才能編輯專案');
+        }
+
+        $project->update([
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+            'due_date' => $data['due_date'] ?? null,
+            'created_by' => $authID,
+        ]);
+
+    }
 }

@@ -45,6 +45,20 @@ class ProjectController extends Controller
         return $this->success(ProjectResource::make($res));
     }
 
+    public function edit(Project $project, Request $request)
+    {
+        $validated = $request->validate([
+            'team_id' => 'required|integer|exists:teams,id',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'due_date' => 'nullable|date',
+        ]);
+
+        $this->projectService->updateProject($validated);
+
+        return $this->success();
+    }
+
     public function test()
     {
         // event(new TeamNotify());

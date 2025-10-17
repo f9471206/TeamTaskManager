@@ -140,7 +140,6 @@
             await renderNotifications();
 
 
-
             // 廣播
             const user = JSON.parse(sessionStorage.getItem('user'));
             const userId = user?.id;

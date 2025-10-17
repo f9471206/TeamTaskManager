@@ -23,6 +23,34 @@ class InvitationService
         $this->authService = $authService;
     }
 
+    public function sendInviteArray(Team $team, array $userIds)
+    {
+        $results = [
+            'success' => [],
+            'failed' => [],
+        ];
+
+        foreach ($userIds as $userId) {
+            try {
+                // 直接使用現有的單筆發送方法
+                $this->sendInvite($team, $userId);
+
+                $results['success'][] = $userId;
+            } catch (\Exception $e) {
+                // 若其中一筆失敗，記錄失敗原因
+                $results['failed'][] = [
+                    'user_id' => $userId,
+                    'error' => $e->getMessage(),
+                ];
+            }
+        }
+
+        return [
+            'msg' => 'completed',
+            'data' => $results,
+        ];
+    }
+
     public function sendInvite(Team $team, int $userId)
     {
         $user = User::findOrFail($userId);
@@ -55,7 +83,7 @@ class InvitationService
         Notification::create([
             'user_id' => $userId,
             'message' => $message,
-            'link' => "/api/invitations/{$invitation->token}/accept",
+            'link' => "/teams/invitations/{$invitation->token}/accept",
             'type' => 'team_invite',
         ]);
 

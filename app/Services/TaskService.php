@@ -93,13 +93,15 @@ class TaskService
             throw new ApiException('只有團隊建立者才能編輯任務');
         }
 
+        $userIds = $data['user_ids'];
         // 更新任務資料
         $task->update([
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
             'due_date' => $data['due_date'] ?? null,
-            'status' => $data['status'] ?? Task::STATUS_TODO,
         ]);
+
+        $task->users()->sync($userIds);
 
         return $task;
     }
