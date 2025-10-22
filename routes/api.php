@@ -30,21 +30,23 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/invitations/{token}/accept', [InvitationController::class, 'accept']); // 接受邀請
     });
 
+    // 團隊專案
     Route::prefix('projects')->group(function () {
-        Route::get('/test', [ProjectController::class, 'test']);
-        Route::get('/{project}', [ProjectController::class, 'show']);
-        Route::put('/{project}', [ProjectController::class, 'edit']);
-        Route::post('/', [ProjectController::class, 'store']);
+        Route::get('/{project}', [ProjectController::class, 'show']); // 取得專案
+        Route::put('/{project}', [ProjectController::class, 'edit']); // 編輯專案
+        Route::post('/', [ProjectController::class, 'store']); // 新增專案
     });
 
+    // 專案內任務
     Route::prefix('tasks')->group(function () {
-        Route::get('/createTaskAssignUsersList/{project}', [TaskController::class, 'createTaskAssignUsers']);
-        Route::get('/assignUsersList/{task}', [TaskController::class, 'assignUsers']);
-        route::post('/', [TaskController::class, 'store']);
-        route::get('/{task}', [TaskController::class, 'show']);
-        Route::put('/{task}', [TaskController::class, 'update']);
-        Route::delete('/{task}', [TaskController::class, 'destroyTask']);
-        Route::post('/{task}/assign', [TaskController::class, 'assign']);
-        Route::delete('/{task}/unassign', [TaskController::class, 'unassign']);
+        Route::get('/createTaskAssignUsersList/{project}', [TaskController::class, 'createTaskAssignUsers']); //取得指派人員名單(新增使用)
+        Route::get('/assignUsersList/{task}', [TaskController::class, 'assignUsers']); //取得指派人員名單(編輯使用)
+        route::post('/', [TaskController::class, 'store']); // 新增任務
+        route::get('/status', [TaskController::class, 'status']); // 取的所有任務狀態
+        route::get('/{task}', [TaskController::class, 'show']); // 取的特定任務
+        Route::put('/{task}', [TaskController::class, 'update']); // 編輯任務
+        Route::delete('/{task}', [TaskController::class, 'destroyTask']); // 刪除任務
+        Route::post('/{task}/assign', [TaskController::class, 'assign']); // 新增任務
+        Route::delete('/{task}/unassign', [TaskController::class, 'unassign']); // 刪除指派人員
     });
 });

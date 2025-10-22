@@ -6,10 +6,13 @@ use App\Exceptions\ApiException;
 use App\Models\Invitation;
 use App\Models\Team;
 use App\Models\User;
+use App\Traits\HasPaginationAndSearch;
 use Illuminate\Support\Facades\Auth;
 
 class TeamService
 {
+    use HasPaginationAndSearch;
+
     /**
      * 建立新團隊
      *
@@ -33,21 +36,37 @@ class TeamService
     }
 
     /**
-     *
+     * Summary of ownTeam
+     * @param mixed $request
+     * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function ownTeam()
+    public function ownTeam($request)
     {
         $authID = Auth::id();
 
-        // 取得 pivot role = 'owner' 的第一個 team
-        $res = Team::whereHas('members', function ($query) use ($authID) {
-            $query->where('user_id', $authID);
-        })->get();
+        $params = $this->parseListParams($request);
 
-        // Collection of names
+        $query = Team::whereHas('members', function ($q) use ($authID) {
+            $q->where('user_id', $authID);
+        });
+
+        // 🔹 排序
+        $sort = in_array($params['sort'], ['id', 'name', 'created_at', 'updated_at']) ? $params['sort'] : 'created_at';
+        $direction = strtolower($params['direction']) === 'asc' ? 'asc' : 'desc';
+        $query->orderBy($sort, $direction);
+
+        // 🔹 分頁
+        $perPage = $params['per_page'] > 0 ? $params['per_page'] : 10;
+        $res = $query->paginate($perPage);
+
         return $res;
     }
 
+    /**
+     * 取的團隊明細
+     * @param mixed $team
+     * @throws \App\Exceptions\ApiException
+     */
     public function getDetails($team)
     {
         if (!$team->members()->where('user_id', Auth::id())->exists()) {
@@ -67,6 +86,11 @@ class TeamService
         return $team;
     }
 
+    /**
+     * 取得所有使用者
+     * @param \App\Models\Team $team
+     * @return \Illuminate\Database\Eloquent\Collection<int, User>|\Illuminate\Support\Collection<int, User>
+     */
     public function allUsersWithStatus(Team $team)
     {
         // 取得團隊所有成員
@@ -100,6 +124,13 @@ class TeamService
         return $usersWithStatus;
     }
 
+    /**
+     * 更新團隊資訊
+     * @param mixed $team
+     * @param mixed $data
+     * @throws \App\Exceptions\ApiException
+     * @return void
+     */
     public function updateTeam($team, $data)
     {
         $userId = Auth::id();
@@ -120,6 +151,13 @@ class TeamService
         ]);
     }
 
+    /**
+     * 刪除團隊會員
+     * @param \App\Models\Team $team
+     * @param int $destroyMemberId
+     * @throws \App\Exceptions\ApiException
+     * @return void
+     */
     public function destroyMember(Team $team, int $destroyMemberId)
     {
         $userId = Auth::id();
@@ -148,6 +186,12 @@ class TeamService
         $team->members()->detach($destroyMemberId);
     }
 
+    /**
+     * 刪除團隊
+     * @param \App\Models\Team $team
+     * @throws \App\Exceptions\ApiException
+     * @return void
+     */
     public function destroy(Team $team)
     {
         $userId = Auth::id();

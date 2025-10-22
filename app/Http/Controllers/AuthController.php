@@ -54,7 +54,11 @@ class AuthController extends Controller
         ]);
     }
 
-    // 登出
+    /**
+     * 登出
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -62,12 +66,21 @@ class AuthController extends Controller
         return $this->success(data: ['message' => 'Logged out']);
     }
 
-    // 取得當前使用者資訊
+    /**
+     * 取得當前使用者資訊
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function me(Request $request)
     {
         return $this->success($request->user());
     }
 
+    /**
+     * 通知廣播
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function notification(Request $request)
     {
 
@@ -77,6 +90,12 @@ class AuthController extends Controller
 
         return $this->success($res);
     }
+
+    /**
+     * 已讀通知
+     * @param mixed $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function notificationRead($id)
     {
         $notification = $this->authService->markAsRead($id);

@@ -45,6 +45,12 @@ class ProjectController extends Controller
         return $this->success(ProjectResource::make($res));
     }
 
+    /**
+     * 編輯專案
+     * @param \App\Models\Project $project
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function edit(Project $project, Request $request)
     {
         $validated = $request->validate([
@@ -55,13 +61,6 @@ class ProjectController extends Controller
         ]);
 
         $this->projectService->updateProject($validated);
-
-        return $this->success();
-    }
-
-    public function test()
-    {
-        // event(new TeamNotify());
 
         return $this->success();
     }

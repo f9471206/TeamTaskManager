@@ -23,6 +23,12 @@ class InvitationService
         $this->authService = $authService;
     }
 
+    /**
+     * 多筆邀請
+     * @param \App\Models\Team $team
+     * @param array $userIds
+     * @return array{data: array, msg: string}
+     */
     public function sendInviteArray(Team $team, array $userIds)
     {
         $results = [
@@ -51,6 +57,13 @@ class InvitationService
         ];
     }
 
+    /**
+     * 單筆邀請
+     * @param \App\Models\Team $team
+     * @param int $userId
+     * @throws \App\Exceptions\ApiException
+     * @return string
+     */
     public function sendInvite(Team $team, int $userId)
     {
         $user = User::findOrFail($userId);
@@ -97,6 +110,9 @@ class InvitationService
 
     /**
      * 接受邀請
+     * @param string $token
+     * @param mixed $authID
+     * @throws \App\Exceptions\ApiException
      */
     public function acceptInvite(string $token, $authID)
     {

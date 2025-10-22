@@ -18,7 +18,6 @@
             <div class="flex items-center space-x-4" x-data="{ open: false, notifications: [] }">
                 <a href="{{ url('/') }}" class="hover:text-cyan-400">首頁</a>
                 <a href="{{ url('/teams') }}" class="hover:text-cyan-400">團隊</a>
-                <a href="{{ url('/profile') }}" class="hover:text-cyan-400">個人資料</a>
                 <!-- 通知按鈕 -->
                 <div class="relative" id="notification-container">
                     <button id="notification-btn" class="hover:text-cyan-400 relative">

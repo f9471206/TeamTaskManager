@@ -52,6 +52,13 @@ class ProjectService
         return $project;
     }
 
+    /**
+     * 編輯專案
+     * @param \App\Models\Project $project
+     * @param mixed $data
+     * @throws \App\Exceptions\ApiException
+     * @return void
+     */
     public function updateProject(Project $project, $data)
     {
         $authID = Auth::id();

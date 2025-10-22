@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
+
+    /**
+     * 註冊
+     * @param array $data
+     * @return array{token: string, user: User}
+     */
     public function register(array $data): array
     {
         $user = User::create([
@@ -25,7 +31,7 @@ class AuthService
     }
 
     /**
-     * Summary of getNotifications
+     * 取得通知
      * @param mixed $userId
      */
     public function getNotifications($userId)
@@ -38,6 +44,11 @@ class AuthService
         return $notifications;
     }
 
+    /**
+     * 已讀通知
+     * @param int $id
+     * @return Notification|\Illuminate\Database\Eloquent\Builder<Notification>
+     */
     public function markAsRead(int $id): Notification | null
     {
         $notification = Notification::find($id);

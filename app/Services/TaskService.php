@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\TaskStatus;
 use App\Exceptions\ApiException;
 use App\Models\Project;
 use App\Models\Task;
@@ -42,9 +43,28 @@ class TaskService
         return true;
     }
 
+    /**
+     * 取的特定任務
+     * @param \App\Models\Task $task
+     * @return Task
+     */
     public function getDetails(Task $task)
     {
         return $task; // 已經是 Task 模型實例
+    }
+
+    /**
+     * 取得任務所有狀態
+     * @return array{id: int, name: string[]}
+     */
+    public function getStatus()
+    {
+        return collect(TaskStatus::cases())
+            ->map(fn($status) => [
+                'id' => $status->value,
+                'name' => $status->label(),
+            ])
+            ->all();
     }
 
     /**
@@ -85,8 +105,8 @@ class TaskService
         $authID = Auth::id();
 
         // 取得任務所屬的 project 與 team
-        $project = $task->project; // 假設 Task 有 project 關聯
-        $team = $project->team; // 假設 Project 有 team 關聯
+        $project = $task->project;
+        $team = $project->team;
 
         // 只有團隊建立者可以編輯
         if ($team->owner->id !== $authID) {
@@ -99,6 +119,7 @@ class TaskService
             'title' => $data['title'],
             'description' => $data['description'] ?? null,
             'due_date' => $data['due_date'] ?? null,
+            'status' => $data['status'] ?? null,
         ]);
 
         $task->users()->sync($userIds);
@@ -118,8 +139,8 @@ class TaskService
         $authID = Auth::id();
 
         // 取得任務所屬的 project 與 team
-        $project = $task->project; // 假設 Task 有 project 關聯
-        $team = $project->team; // 假設 Project 有 team 關聯
+        $project = $task->project;
+        $team = $project->team;
 
         // 只有團隊建立者可以編輯
         if ($team->owner->id !== $authID) {
@@ -150,14 +171,16 @@ class TaskService
         $task->users()->detach($data['user_ids']);
     }
 
+    /**
+     * 取得指派人員名單(編輯任務使用)
+     * @param \App\Models\Task $task
+     */
     public function assignUsers(Task $task)
     {
         // 1. 取得已分配的用戶 ID 列表，用於快速查詢
-        // 假設 $task->users 是一個 User 模型的集合
         $taskUserIds = $task->users->pluck('id')->toArray();
 
         // 2. 取得團隊成員列表
-        // 假設 $task->project->team->members 是一個 User 模型的集合
         $teamMembers = $task->project->team->members;
 
         // 3. 處理集合：迭代團隊成員，並新增一個 'assigned' 標籤
@@ -174,6 +197,11 @@ class TaskService
         return $result;
     }
 
+    /**
+     * 取得指派人員名單(新增任務使用)
+     * @param \App\Models\Project $project
+     * @return \App\Models\User
+     */
     public function createTaskAssignUsers(Project $project)
     {
         $teamMembers = $project->team->members;

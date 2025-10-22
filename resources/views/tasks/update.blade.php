@@ -40,6 +40,15 @@
                 <p class="text-gray-500">正在載入可指派人員...</p>
             </div>
 
+            {{-- 任務狀態 --}}
+            <div>
+                <label for="task_status" class="block font-semibold text-gray-700 mb-1">任務狀態</label>
+                <select id="task_status" name="status"
+                    class="w-full border border-gray-300 rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500">
+                    <option value="">載入中...</option>
+                </select>
+            </div>
+
             <button type="submit" id="submitButton"
                 class="w-full bg-blue-600 text-white font-semibold px-4 py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed">
                 更新任務
@@ -67,15 +76,20 @@
             // -------------------------------
             // 載入任務資料
             // -------------------------------
+            let currentStatusValue = null;
             try {
                 const res = await window.api.get(`/tasks/${taskId}`);
                 if (res.msg === "success" && res.data) {
                     const task = res.data;
+
                     document.getElementById("task_title").value = task.title ?? "";
                     document.getElementById("task_description").value = task.description ?? "";
                     if (task.due_date) {
                         document.getElementById("task_due_date").value = task.due_date.split("T")[0];
                     }
+
+                    // ✅ 取出目前的狀態值（enum.value）
+                    currentStatusValue = task.status?.value ?? null;
                 } else {
                     alert("無法載入任務資料。");
                     return;
@@ -85,6 +99,39 @@
                 alert("無法載入任務資料。");
                 return;
             }
+
+            // -------------------------------
+            // 載入任務狀態下拉選單
+            // -------------------------------
+            await loadStatusOptions(currentStatusValue);
+            async function loadStatusOptions(selectedStatus = null) {
+                const select = document.getElementById('task_status');
+
+                try {
+                    const res = await window.api.get('/tasks/status'); // 後端回傳 Enum 清單
+                    if (res.msg === "success" && Array.isArray(res.data)) {
+                        select.innerHTML = ''; // 清空原選項
+
+                        res.data.forEach(status => {
+                            const option = document.createElement('option');
+                            option.value = status.id;
+                            option.textContent = status.name;
+
+                            if (selectedStatus !== null && parseInt(selectedStatus) === status.id) {
+                                option.selected = true;
+                            }
+
+                            select.appendChild(option);
+                        });
+                    } else {
+                        select.innerHTML = '<option value="">無法載入狀態</option>';
+                    }
+                } catch (err) {
+                    console.error('載入狀態選單失敗：', err);
+                    select.innerHTML = '<option value="">載入失敗</option>';
+                }
+            }
+
 
             // -------------------------------
             // 載入可指派人員
@@ -137,6 +184,7 @@
                 const title = document.getElementById("task_title").value.trim();
                 const description = document.getElementById("task_description").value.trim();
                 const dueDate = document.getElementById("task_due_date").value;
+                const status = document.getElementById("task_status").value;
                 const assignedUserIds = Array.from(
                     form.querySelectorAll('input[name="assigned_user_ids[]"]:checked')
                 ).map(cb => cb.value);
@@ -153,6 +201,7 @@
                     const res = await window.api.put(`/tasks/${taskId}`, {
                         title,
                         description,
+                        status: status || null,
                         due_date: dueDate || null,
                         user_ids: assignedUserIds
                     });

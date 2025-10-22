@@ -18,6 +18,9 @@ class InvitationController extends Controller
 
     /**
      * 發送邀請
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Team $team
+     * @return \Illuminate\Http\JsonResponse
      */
     public function send(Request $request, Team $team)
     {
@@ -27,7 +30,7 @@ class InvitationController extends Controller
 
         $userIds = $request->input('user_id');
 
-        // ✅ 判斷是單筆還是多筆
+        // 判斷是單筆還是多筆
         if (is_array($userIds)) {
             // 多筆邀請
             $result = $this->invitationService->sendInviteArray($team, $userIds);
@@ -47,7 +50,11 @@ class InvitationController extends Controller
         }
     }
 
-    // 接受邀請
+    /**
+     * 接受邀請
+     * @param mixed $token
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function accept($token)
     {
         $authID = auth()->id();
