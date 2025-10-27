@@ -8,6 +8,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Traits\HasPaginationAndSearch;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TeamService
 {
@@ -21,18 +22,17 @@ class TeamService
      */
     public function createTeam(array $data): Team
     {
-        // 建立團隊
-        $team = Team::create([
-            'name' => $data['name'],
-            'description' => $data['description'] ?? null,
-        ]);
+        return DB::transaction(function () use ($data) {
+            $team = Team::create([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? null,
+            ]);
 
-        // 把建立者加入 pivot table，role = owner
-        $team->members()->attach(Auth::id(), [
-            'role' => 'owner',
-        ]);
+            $team->members()->attach(Auth::id(), ['role' => 'owner']);
 
-        return $team;
+            return $team;
+        });
+
     }
 
     /**

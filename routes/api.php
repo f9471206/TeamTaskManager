@@ -7,7 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 // 需要認證的路由
@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{project}', [ProjectController::class, 'show']); // 取得專案
         Route::put('/{project}', [ProjectController::class, 'edit']); // 編輯專案
         Route::post('/', [ProjectController::class, 'store']); // 新增專案
+        Route::delete('/{project}', [ProjectController::class, 'destroy']); // 新增專案
     });
 
     // 專案內任務
@@ -49,4 +50,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{task}/assign', [TaskController::class, 'assign']); // 新增任務
         Route::delete('/{task}/unassign', [TaskController::class, 'unassign']); // 刪除指派人員
     });
+
 });

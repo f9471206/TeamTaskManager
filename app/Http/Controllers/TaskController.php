@@ -29,7 +29,7 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
             'due_date' => 'nullable|date',
-            'user_ids' => 'required|array',
+            'user_ids' => 'nullable|array',
             'user_ids.*' => 'exists:users,id',
         ]);
 
@@ -94,7 +94,7 @@ class TaskController extends Controller
             'description' => 'nullable|string|max:255',
             'due_date' => 'nullable|date',
             'status' => 'nullable|integer|in:0,1,2,3',
-            'user_ids' => 'required|array',
+            'user_ids' => 'nullable|array',
             'user_ids.*' => 'exists:users,id',
         ]);
 

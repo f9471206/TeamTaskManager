@@ -17,33 +17,23 @@ class InvitationService
 {
     protected $authService;
 
-    public function __construct(
-        AuthService $authService
-    ) {
+    public function __construct(AuthService $authService)
+    {
         $this->authService = $authService;
     }
 
     /**
      * 多筆邀請
-     * @param \App\Models\Team $team
-     * @param array $userIds
-     * @return array{data: array, msg: string}
      */
     public function sendInviteArray(Team $team, array $userIds)
     {
-        $results = [
-            'success' => [],
-            'failed' => [],
-        ];
+        $results = ['success' => [], 'failed' => []];
 
         foreach ($userIds as $userId) {
             try {
-                // 直接使用現有的單筆發送方法
                 $this->sendInvite($team, $userId);
-
                 $results['success'][] = $userId;
             } catch (\Exception $e) {
-                // 若其中一筆失敗，記錄失敗原因
                 $results['failed'][] = [
                     'user_id' => $userId,
                     'error' => $e->getMessage(),
@@ -51,68 +41,57 @@ class InvitationService
             }
         }
 
-        return [
-            'msg' => 'completed',
-            'data' => $results,
-        ];
+        return ['msg' => 'completed', 'data' => $results];
     }
 
     /**
      * 單筆邀請
-     * @param \App\Models\Team $team
-     * @param int $userId
-     * @throws \App\Exceptions\ApiException
-     * @return string
      */
     public function sendInvite(Team $team, int $userId)
     {
         $user = User::findOrFail($userId);
 
-        // 檢查是否已經是成員
         if ($team->members()->where('user_id', $userId)->exists()) {
             throw new ApiException('User is already a team member');
         }
 
-        // 檢查是否已經有待處理的邀請
-        // 這行程式碼會在發信前就檢查，避免重複發信
-        if (Invitation::where('team_id', $team->id)->where('user_id', $userId)->where('status', 'pending')->exists()) {
+        if (Invitation::where('team_id', $team->id)
+            ->where('user_id', $userId)
+            ->where('status', 'pending')
+            ->exists()
+        ) {
             throw new ApiException('A pending invitation for this user already exists');
         }
 
-        // 建立邀請
-        $invitation = Invitation::create([
-            'team_id' => $team->id,
-            'user_id' => $userId,
-            'status' => 'pending',
-            'token' => Str::uuid()->toString(),
-            'expires_at' => now()->addMinutes(5),
-        ]);
+        DB::transaction(function () use ($team, $userId, $user) {
+            $invitation = Invitation::create([
+                'team_id' => $team->id,
+                'user_id' => $userId,
+                'status' => 'pending',
+                'token' => Str::uuid()->toString(),
+                'expires_at' => now()->addMinutes(5),
+            ]);
 
-        // 發送郵件
-        Mail::to($user->email)->send(new TeamInvitationMail($team, $user, $invitation->token));
+            Notification::create([
+                'user_id' => $userId,
+                'message' => "邀請你加入 {$team->name} 團隊",
+                'link' => "/teams/invitations/{$invitation->token}/accept",
+                'type' => 'team_invite',
+            ]);
 
-        $message = "邀請你加入 {$team->name} 團隊";
+            // 發送郵件
+            Mail::to($user->email)->queue(new TeamInvitationMail($team, $user, $invitation->token));
 
-        Notification::create([
-            'user_id' => $userId,
-            'message' => $message,
-            'link' => "/teams/invitations/{$invitation->token}/accept",
-            'type' => 'team_invite',
-        ]);
-
-        $notifications = $this->authService->getNotifications($userId);
-
-        // 發送通知
-        event(new TeamNotify(userId: $userId, message: $notifications));
+            // 發送即時通知
+            $notifications = $this->authService->getNotifications($userId);
+            event(new TeamNotify(userId: $userId, message: $notifications));
+        });
 
         return 'success';
     }
 
     /**
      * 接受邀請
-     * @param string $token
-     * @param mixed $authID
-     * @throws \App\Exceptions\ApiException
      */
     public function acceptInvite(string $token, $authID)
     {
@@ -135,17 +114,16 @@ class InvitationService
         }
 
         return DB::transaction(function () use ($invitation) {
-            // 加入 team_user
-            $invitation->team->members()->attach($invitation->user_id, [
-                'role' => 'member',
-            ]);
+            if (!$invitation->team->members()->where('user_id', $invitation->user_id)->exists()) {
+                $invitation->team->members()->attach($invitation->user_id, [
+                    'role' => 'member',
+                ]);
+            }
 
-            // 更新邀請狀態
             $invitation->status = 'accepted';
             $invitation->save();
 
             return $invitation->team;
         });
     }
-
 }

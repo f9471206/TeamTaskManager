@@ -12,6 +12,11 @@
             </a>
         </div>
 
+        {{-- 團隊清單 --}}
+        <div id="team-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6  mb-3">
+            <p id="loading-text" class="text-gray-500">載入中...</p>
+        </div>
+
         {{-- 每頁顯示筆數 --}}
         <div class="flex items-center mb-3 space-x-2">
             <span class="text-gray-700">每頁顯示：</span>
@@ -26,10 +31,7 @@
         {{-- 顯示筆數資訊 --}}
         <p id="record-info" class="text-gray-500 mb-3"></p>
 
-        {{-- 團隊清單 --}}
-        <div id="team-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <p id="loading-text" class="text-gray-500">載入中...</p>
-        </div>
+
 
         {{-- 分頁按鈕 --}}
         <div id="pagination" class="flex justify-center mt-6 space-x-2"></div>
@@ -96,17 +98,17 @@
                         card.innerHTML = `
                     <a href="/teams/${team.team_id}" class="block hover:text-cyan-600">
                         <h2 class="text-xl font-semibold mb-2 text-gray-800">${team.team_name}</h2>
+                        <p class="text-gray-600 text-sm mb-3">${team.description ?? "（無描述）"}</p>
+                        <div class="text-sm mb-3">
+                            <span class="font-semibold text-gray-700">成員：</span>
+                            <ul class="list-disc list-inside">${memberList}</ul>
+                        </div>
+                        <div class="text-sm mb-3">
+                            <span class="font-semibold text-gray-700">專案：</span>
+                            <ul class="list-disc list-inside">${projectList}</ul>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">建立於：${team.created_at}</p>
                     </a>
-                    <p class="text-gray-600 text-sm mb-3">${team.description ?? "（無描述）"}</p>
-                    <div class="text-sm mb-3">
-                        <span class="font-semibold text-gray-700">成員：</span>
-                        <ul class="list-disc list-inside">${memberList}</ul>
-                    </div>
-                    <div class="text-sm mb-3">
-                        <span class="font-semibold text-gray-700">專案：</span>
-                        <ul class="list-disc list-inside">${projectList}</ul>
-                    </div>
-                    <p class="text-xs text-gray-400 mt-2">建立於：${team.created_at}</p>
                 `;
 
                         teamList.appendChild(card);

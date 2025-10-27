@@ -60,7 +60,19 @@ class ProjectController extends Controller
             'due_date' => 'nullable|date',
         ]);
 
-        $this->projectService->updateProject($validated);
+        $this->projectService->updateProject($project, $validated);
+
+        return $this->success();
+    }
+
+    /**
+     * Summary of destroy
+     * @param \App\Models\Project $project
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Project $project)
+    {
+        $this->projectService->destroy($project);
 
         return $this->success();
     }

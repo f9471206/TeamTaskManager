@@ -47,10 +47,6 @@ Route::get('task/update/{project_id}/{task_id}', function ($project_id, $task_id
     return view('tasks.update', ['project_id' => $project_id, 'task_id' => $task_id]);
 });
 
-Route::get('/test', function () {
-    return view('test');
-});
-
 Route::get('/teamInvite/{id}', function ($id) {
     return view('teams.invite', ['teamId' => $id]);
 });
