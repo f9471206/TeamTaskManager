@@ -45,7 +45,7 @@ class TeamController extends Controller
 
         $this->teamService->createTeam($validated);
 
-        return $this->success();
+        return $this->created();
     }
 
     /**
@@ -85,7 +85,7 @@ class TeamController extends Controller
         ]);
 
         $this->teamService->updateTeam($team, $validated);
-        return $this->success();
+        return $this->updated();
     }
 
     /**
@@ -99,7 +99,7 @@ class TeamController extends Controller
 
         $this->teamService->destroyMember($team, $destroyMemberId);
 
-        return $this->success();
+        return $this->deleted();
 
     }
 
@@ -112,7 +112,7 @@ class TeamController extends Controller
     {
         $this->teamService->destroy($team);
 
-        return $this->success();
+        return $this->deleted();
     }
 
 }

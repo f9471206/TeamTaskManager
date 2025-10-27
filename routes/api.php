@@ -24,7 +24,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{team}', [TeamController::class, 'show']); // 取得單一團隊
         Route::get('{team}/all-users', [TeamController::class, 'allUsersWithStatus']);
         Route::put('/{team}', [TeamController::class, 'update']); // 更新團隊資訊
-        Route::delete('/{team}/{destroyMemberId}', [TeamController::class, 'destroyMember']); // 團隊成員刪除
+        Route::delete('/{team}/members/{destroyMemberId}', [TeamController::class, 'destroyMember']); // 團隊成員刪除
         Route::delete('/{team}', [TeamController::class, 'destroy']); // 刪除團隊
         Route::post('/{team}/invite', [InvitationController::class, 'send']); // 發送邀請 新增團隊成員
         Route::get('/invitations/{token}/accept', [InvitationController::class, 'accept']); // 接受邀請

@@ -117,12 +117,10 @@
                         description
                     });
 
-                    if (res.msg === "success") {
-                        alert("團隊更新成功！");
-                        window.location.href = `/teams/${teamId}`;
-                    } else {
-                        alert("更新失敗：" + (res.message || "未知錯誤"));
-                    }
+
+                    alert("團隊更新成功！");
+                    window.location.href = `/teams/${teamId}`;
+
                 } catch (err) {
                     console.error("更新團隊失敗：", err);
                     alert(err.message || "更新失敗，請稍後再試");

@@ -21,12 +21,12 @@ class ExceptionServiceProvider extends ServiceProvider
 
         $handler->renderable(function (\Throwable $e, $request) {
 
-            // 自訂 ApiException
             if ($e instanceof ApiException) {
+                $status = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 400;
                 return response()->json([
                     'msg' => $e->getMessage(),
-                    'code' => $e->getCode() ?: 400,
-                ], 400);
+                    'code' => $status,
+                ], $status); //
             }
 
             // Token 過期 / 未授權

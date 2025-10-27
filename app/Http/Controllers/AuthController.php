@@ -16,7 +16,11 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    // 登入
+    /**
+     * 登入
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -37,7 +41,11 @@ class AuthController extends Controller
         ]);
     }
 
-    // 註冊
+    /**
+     * 註冊
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -48,7 +56,7 @@ class AuthController extends Controller
 
         $result = $this->authService->register($validated);
 
-        return $this->success([
+        return $this->created([
             'user' => $result['user'],
             'token' => $result['token'],
         ]);
@@ -104,6 +112,8 @@ class AuthController extends Controller
             return $this->error('通知不存在');
         }
 
-        return $this->success(['success' => true, 'message' => '已讀', 'data' => $notification]);
+        return $this->updated([
+            'data' => $notification,
+        ]);
     }
 }

@@ -50,12 +50,10 @@ class TeamService
             $q->where('user_id', $authID);
         });
 
-        // 🔹 排序
         $sort = in_array($params['sort'], ['id', 'name', 'created_at', 'updated_at']) ? $params['sort'] : 'created_at';
         $direction = strtolower($params['direction']) === 'asc' ? 'asc' : 'desc';
         $query->orderBy($sort, $direction);
 
-        // 🔹 分頁
         $perPage = $params['per_page'] > 0 ? $params['per_page'] : 10;
         $res = $query->paginate($perPage);
 
@@ -81,8 +79,6 @@ class TeamService
             'projects' => function ($query) {},
         ]);
 
-        // 3. 返回結果
-        // 這裡我們返回 Model 的陣列表示形式，包含了預先載入的成員數據
         return $team;
     }
 
@@ -94,21 +90,21 @@ class TeamService
     public function allUsersWithStatus(Team $team)
     {
         // 取得團隊所有成員
-        $teamMembers = $team->members; // Collection of User
+        $teamMembers = $team->members;
 
         // 取得團隊 owner
-        $owner = $team->owner; // User 或 null
+        $owner = $team->owner;
 
         // 取得所有使用者
         $allUsers = User::all();
 
         // 取得這個團隊的所有邀請，key = user_id, value = status
         $invitations = Invitation::where('team_id', $team->id)
-            ->pluck('status', 'user_id') // [user_id => status]
+            ->pluck('status', 'user_id')
             ->toArray();
 
         $invitationsExpires_at = Invitation::where('team_id', $team->id)
-            ->pluck('expires_at', 'user_id') // [user_id => status]
+            ->pluck('expires_at', 'user_id')
             ->toArray();
 
         // 標記是否為成員 & 是否為 owner
@@ -141,7 +137,6 @@ class TeamService
         $isOwner = $team->owner->id === $userId;
         // 如果不是擁有者，拋出權限不足例外
         if (!$isOwner) {
-            // 由於這是更嚴格的權限檢查，我們使用相同的 403 錯誤
             throw new ApiException('只有團隊建立者（擁有者）才能修改團隊資料。', 403);
         }
 
@@ -168,14 +163,13 @@ class TeamService
         $isOwner = $team->owner->id === $userId;
         // 如果不是擁有者，拋出權限不足例外
         if (!$isOwner) {
-            // 由於這是更嚴格的權限檢查，我們使用相同的 403 錯誤
-            throw new ApiException('只有團隊建立者（擁有者）才能修改團隊資料。');
+            throw new ApiException('只有團隊建立者（擁有者）才能修改團隊資料。', 403);
         }
 
         // 確認被刪除的成員存在於 team_user pivot 表
         $exists = $team->members()->where('user_id', $destroyMemberId)->exists();
         if (!$exists) {
-            throw new ApiException('該成員不在此團隊中。');
+            throw new ApiException('該成員不在此團隊中。', 404);
         }
 
         if ($userId === $destroyMemberId) {
@@ -199,8 +193,7 @@ class TeamService
         $isOwner = $team->owner->id === $userId;
         // 如果不是擁有者，拋出權限不足例外
         if (!$isOwner) {
-            // 由於這是更嚴格的權限檢查，我們使用相同的 403 錯誤
-            throw new ApiException('只有團隊建立者（擁有者）才能刪除團隊。');
+            throw new ApiException('只有團隊建立者（擁有者）才能刪除團隊。', 403);
         }
 
         $team->members()->detach();

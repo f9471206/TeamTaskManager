@@ -110,7 +110,7 @@
 
                         try {
                             const res = await window.api.delete(
-                                `/teams/${team.team_id}/${memberId}`);
+                                `/teams/${team.team_id}/members/${memberId}`);
                             e.target.closest('div').remove();
                             alert('成員已移除');
                         } catch (error) {

@@ -57,12 +57,9 @@
                         name,
                         description
                     });
-                    if (res.msg === "success") {
-                        alert("團隊建立成功！");
-                        window.location.href = "/teams"; // 回列表頁
-                    } else {
-                        alert("建立失敗：" + (res.message || "未知錯誤"));
-                    }
+
+                    alert("團隊建立成功！");
+
                 } catch (err) {
                     console.error("建立團隊失敗：", err);
                     alert(err.message || "建立失敗，請稍後再試");
