@@ -56,7 +56,7 @@ class ProjectService
         $team = $project->team;
 
         if ($team->owner->id !== $authID) {
-            throw new ApiException('只有團隊建立者才能編輯專案');
+            throw new ApiException('只有團隊建立者才能編輯專案', 403);
         }
 
         return DB::transaction(function () use ($project, $data) {
@@ -80,7 +80,7 @@ class ProjectService
         $team = $project->team;
 
         if ($team->owner->id !== $authID) {
-            throw new ApiException('只有團隊建立者才能刪除專案');
+            throw new ApiException('只有團隊建立者才能刪除專案', 403);
         }
 
         DB::transaction(function () use ($project) {

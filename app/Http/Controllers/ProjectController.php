@@ -66,7 +66,7 @@ class ProjectController extends Controller
     }
 
     /**
-     * Summary of destroy
+     * 刪除專案
      * @param \App\Models\Project $project
      * @return \Illuminate\Http\JsonResponse
      */
