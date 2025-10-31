@@ -34,8 +34,8 @@ php artisan key:generate
 # 執行資料表遷移
 php artisan migrate
 
-# 安裝 Reverb 廣播設定與資料表
-php artisan install:broadcasting
+# Reverb 廣播設定
+php artisan reverb:install
 
 # 安裝前端依賴
 npm install
