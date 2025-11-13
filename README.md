@@ -31,6 +31,9 @@ cp .env.example .env
 # 產生應用程式金鑰
 php artisan key:generate
 
+# seed
+php artisan db:seed
+
 # 執行資料表遷移
 php artisan migrate
 
